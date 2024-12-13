@@ -1,0 +1,6 @@
+# Iterate through the streamed response and print each
+for chunk in response:
+    for x in chunk:  # Iterate over each element in the chunk
+        if x:
+            print(x, flush=True, end="")
+    print()  # Print a newline after processing each chunk
