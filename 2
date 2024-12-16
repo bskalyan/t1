@@ -1,0 +1,35 @@
+# Step 2: Initialize the LLM with streaming enabled
+llm = cli.llm(
+    wrapper="langchain",
+    model_name="azure-openai.gpt4o",  # Replace with the correct model name
+    stream=True,  # Enable streaming
+    callbacks=[StreamingStdOutCallbackHandler()]  # Attach streaming output handler
+)
+
+messages = [HumanMessage(content="write an essay on state street in 1000 words")]
+
+response = llm(messages)
+
+# Check if response is None or empty
+if not response:
+    print("Error: Response is None or empty")
+else:
+    # Iterate through the streamed response and handle safely
+    for chunk in response:
+        if chunk:  # Ensure chunk is not None
+            try:
+                # Handle different types of chunks (list, dict, etc.)
+                if isinstance(chunk, list):  # If chunk is a list
+                    for x in chunk:  # Iterate through the list
+                        if x:
+                            print(x, flush=True, end="")
+                elif isinstance(chunk, dict):  # If chunk is a dictionary
+                    for key, value in chunk.items():
+                        print(f"{key}: {value}", flush=True)
+                else:  # If chunk is some other type
+                    print(chunk, flush=True)
+            except Exception as e:
+                print(f"Error processing chunk: {e}")
+        else:
+            print("Skipping None chunk")
+    print()  # Add newline after processing
